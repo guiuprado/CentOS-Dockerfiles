@@ -7,10 +7,6 @@
 FROM centos:centos7
 LABEL MAINTAINER "The CentOS Project <cloud-ops@centos.org> | NVIDIA CORPORATION <cudatools@nvidia.com>" 
 
-RUN yum -y update; 
-RUN yum -y install sudo epel-release; yum clean all
-RUN yum -y install supervisor pwgen; yum clean all
-
 RUN NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efacce4ab5 && \
     curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/7fa2af80.pub | sed '/^Version/d' > /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA && \
     echo "$NVIDIA_GPGKEY_SUM  /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA" | sha256sum -c --strict -
@@ -41,6 +37,10 @@ ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 ENV NVIDIA_REQUIRE_CUDA "cuda>=9.1"
 
 RUN yum -y update; yum clean all
+
+RUN yum -y install sudo epel-release; yum clean all
+RUN yum -y install supervisor pwgen; yum clean all
+
 RUN yum -y install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
 
 RUN yum -y install cuda; yum clean all
