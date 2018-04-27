@@ -58,12 +58,16 @@ COPY cuda.repo /etc/yum.repos.d/cuda.repo
 ENV CUDA_VERSION 9.1.85
 
 ENV CUDA_PKG_VERSION 9-1-$CUDA_VERSION-1
-RUN yum install -y \
-        cuda-cudart-$CUDA_PKG_VERSION && \
-    ln -s cuda-9.1 /usr/local/cuda && \
-    rm -rf /var/cache/yum/*
+#RUN yum install -y \
+#        cuda-cudart-$CUDA_PKG_VERSION && \
+#    ln -s cuda-9.1 /usr/local/cuda && \
+#    rm -rf /var/cache/yum/*
 
-RUN yum install -y cuda
+#RUN yum install -y cuda-cudart-$CUDA_PKG_VERSION
+    #ln -s cuda-9.1 /usr/local/cuda && \
+    #rm -rf /var/cache/yum/*
+	
+RUN yum install -y cuda-$CUDA_PKG_VERSION
 	
 # nvidia-docker 1.0
 LABEL com.nvidia.volumes.needed="nvidia_driver"
