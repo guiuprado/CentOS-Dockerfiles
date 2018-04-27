@@ -56,11 +56,9 @@ RUN NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efac
 COPY cuda.repo /etc/yum.repos.d/cuda.repo
 
 ENV CUDA_VERSION 9.1.85
-
 ENV CUDA_PKG_VERSION 9-1-$CUDA_VERSION-1
-RUN yum install -y cuda-$CUDA_PKG_VERSION && \
-		#ln -s cuda-9.1 /usr/local/cuda && \
-		#rm -rf /var/cache/yum/*
+
+RUN yum install -y cuda-9-1
 	
 #RUN yum install -y \
 #        cuda-cudart-$CUDA_PKG_VERSION && \
