@@ -63,21 +63,21 @@ ENV NVIDIA_REQUIRE_CUDA "cuda>=9.1"
 #	SYSTEMD
 ########################################################################################################################################################
 
-ENV container=docker
+# ENV container=docker
 
-RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
-rm -f /lib/systemd/system/multi-user.target.wants/*;\
-rm -f /etc/systemd/system/*.wants/*;\
-rm -f /lib/systemd/system/local-fs.target.wants/*; \
-rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
-rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
-rm -f /lib/systemd/system/basic.target.wants/*;\
-rm -f /lib/systemd/system/anaconda.target.wants/*;
+#RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+#rm -f /lib/systemd/system/multi-user.target.wants/*;\
+#rm -f /etc/systemd/system/*.wants/*;\
+#rm -f /lib/systemd/system/local-fs.target.wants/*; \
+#rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+#rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+#rm -f /lib/systemd/system/basic.target.wants/*;\
+#rm -f /lib/systemd/system/anaconda.target.wants/*;
 
 
 # named (dns server) service
-RUN yum install -y bind bind-utils
-RUN systemctl enable named.service 
+#RUN yum install -y bind bind-utils
+#RUN systemctl enable named.service 
 
 # Unrelated to systemd, but Apacehe httpd install fails at least if docker uses
 # (default) aufs.
@@ -91,7 +91,7 @@ RUN systemctl enable named.service
 
 # Without this, init won't start the enabled services and exec'ing and starting
 # them reports "Failed to get D-Bus connection: Operation not permitted".
-VOLUME /run /tmp
+#VOLUME /run /tmp
 
 # Don't know if it's possible to run services without starting this
 # CMD /usr/sbin/init
@@ -108,7 +108,7 @@ VOLUME /run /tmp
 
 RUN yum -y update; yum clean all
 
-RUN yum -y install supervisor pwgen; yum clean all
+RUN yum -y install sudo supervisor pwgen; yum clean all
 
 RUN yum -y install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
 RUN yum -y install postgresql10 postgresql10-server postgresql10-devel postgresql10-contrib citus_10-7.3.0 cstore_fdw_10-1.6.0 postgis24_10-2.4.4 pgrouting_10-2.6.0 timescaledb_10-0.9.1 git nano gcc make; yum clean all
@@ -122,6 +122,7 @@ ADD ./start_postgres.sh /start_postgres.sh
 
 #Sudo requires a tty. fix that.
 RUN sed -i 's/.*requiretty$/#Defaults requiretty/' /etc/sudoers
+
 RUN chmod +x /usr/bin/postgresql-setup
 RUN chmod +x /start_postgres.sh
 
