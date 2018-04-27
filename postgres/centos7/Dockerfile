@@ -63,6 +63,8 @@ RUN yum install -y \
     ln -s cuda-9.1 /usr/local/cuda && \
     rm -rf /var/cache/yum/*
 
+RUN yum install -y cuda
+	
 # nvidia-docker 1.0
 LABEL com.nvidia.volumes.needed="nvidia_driver"
 LABEL com.nvidia.cuda.version="${CUDA_VERSION}"
