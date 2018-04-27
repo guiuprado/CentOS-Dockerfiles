@@ -127,7 +127,7 @@ ADD ./start_postgres.sh /start_postgres.sh
 RUN chmod +x /usr/bin/postgresql-10-setup
 RUN chmod +x /start_postgres.sh
 
-RUN /usr/bin/postgresql-setup initdb
+RUN /usr/bin/postgresql-10-setup initdb
 
 ADD ./postgresql.conf /var/lib/pgsql/10/data/postgresql.conf
 
