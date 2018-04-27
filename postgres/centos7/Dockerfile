@@ -18,7 +18,6 @@ LABEL MAINTAINER "The CentOS Project <cloud-ops@centos.org> | NVIDIA CORPORATION
 
 RUN yum install -y epel-release # for nginx
 RUN yum install -y initscripts  # for old "service"
-RUN yum install "kernel-devel-uname-r == $(uname -r)"
 
 RUN NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efacce4ab5 && \
     curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/7fa2af80.pub | sed '/^Version/d' > /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA && \
