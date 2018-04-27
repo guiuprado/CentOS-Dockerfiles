@@ -90,7 +90,7 @@ ENV NVIDIA_REQUIRE_CUDA "cuda>=9.1"
 
 # Without this, init won't start the enabled services and exec'ing and starting
 # them reports "Failed to get D-Bus connection: Operation not permitted".
-VOLUME /run /tmp
+# VOLUME /run /tmp
 
 VOLUME ["/sys/fs/cgroup:/sys/fs/cgroup:ro", "/run", "/tmpfs", "/tmp"]
 
