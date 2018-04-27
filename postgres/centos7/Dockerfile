@@ -27,6 +27,7 @@ rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
 rm -f /lib/systemd/system/basic.target.wants/*;\
 rm -f /lib/systemd/system/anaconda.target.wants/*;
 
+
 # named (dns server) service
 RUN yum install -y bind bind-utils
 RUN systemctl enable named.service 
@@ -46,8 +47,7 @@ RUN systemctl enable named.service
 VOLUME /run /tmp
 
 # Don't know if it's possible to run services without starting this
-CMD /usr/sbin/init
-
+# CMD /usr/sbin/init
 
 RUN NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efacce4ab5 && \
     curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/7fa2af80.pub | sed '/^Version/d' > /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA && \
@@ -58,10 +58,14 @@ COPY cuda.repo /etc/yum.repos.d/cuda.repo
 ENV CUDA_VERSION 9.1.85
 
 ENV CUDA_PKG_VERSION 9-1-$CUDA_VERSION-1
-RUN yum install -y \
-        cuda-cudart-$CUDA_PKG_VERSION && \
-    ln -s cuda-9.1 /usr/local/cuda && \
-    rm -rf /var/cache/yum/*
+RUN yum install -y cuda-$CUDA_PKG_VERSION && \
+		#ln -s cuda-9.1 /usr/local/cuda && \
+		#rm -rf /var/cache/yum/*
+	
+#RUN yum install -y \
+#        cuda-cudart-$CUDA_PKG_VERSION && \
+#    ln -s cuda-9.1 /usr/local/cuda && \
+#    rm -rf /var/cache/yum/*
 
 # nvidia-docker 1.0
 LABEL com.nvidia.volumes.needed="nvidia_driver"
@@ -78,15 +82,14 @@ ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 ENV NVIDIA_REQUIRE_CUDA "cuda>=9.1"
 
+RUN nvidia-smi
+
 RUN yum -y update; yum clean all
 
-RUN yum -y install sudo epel-release; yum clean all
 RUN yum -y install supervisor pwgen; yum clean all
 
 RUN yum -y install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
-
-RUN yum -y install cuda; yum clean all
-RUN yum -y install postgresql10 postgresql10-server postgresql10-contrib citus_10-7.3.0 cstore_fdw_10-1.6.0 postgis24_10-2.4.4 pgrouting_10-2.6.0 timescaledb_10-0.9.1 git nano gcc make; yum clean all
+RUN yum -y install postgresql10 postgresql10-server postgresql10-devel postgresql10-contrib citus_10-7.3.0 cstore_fdw_10-1.6.0 postgis24_10-2.4.4 pgrouting_10-2.6.0 timescaledb_10-0.9.1 git nano gcc make; yum clean all
 
 RUN yum -y install https://heterodb.github.io/swdc/yum/rhel7-x86_64/heterodb-swdc-1.0-1.el7.noarch.rpm
 RUN yum -y install pg_strom-PG10-2.0 nvme_strom-1.0
