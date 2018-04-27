@@ -63,16 +63,16 @@ ENV NVIDIA_REQUIRE_CUDA "cuda>=9.1"
 #	SYSTEMD
 ########################################################################################################################################################
 
-# ENV container=docker
+ENV container=docker
 
-#RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
-#rm -f /lib/systemd/system/multi-user.target.wants/*;\
-#rm -f /etc/systemd/system/*.wants/*;\
-#rm -f /lib/systemd/system/local-fs.target.wants/*; \
-#rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
-#rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
-#rm -f /lib/systemd/system/basic.target.wants/*;\
-#rm -f /lib/systemd/system/anaconda.target.wants/*;
+RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+rm -f /lib/systemd/system/multi-user.target.wants/*;\
+rm -f /etc/systemd/system/*.wants/*;\
+rm -f /lib/systemd/system/local-fs.target.wants/*; \
+rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+rm -f /lib/systemd/system/basic.target.wants/*;\
+rm -f /lib/systemd/system/anaconda.target.wants/*;
 
 
 # named (dns server) service
@@ -91,7 +91,7 @@ ENV NVIDIA_REQUIRE_CUDA "cuda>=9.1"
 
 # Without this, init won't start the enabled services and exec'ing and starting
 # them reports "Failed to get D-Bus connection: Operation not permitted".
-#VOLUME /run /tmp
+VOLUME /run /tmp
 
 # Don't know if it's possible to run services without starting this
 # CMD /usr/sbin/init
