@@ -114,27 +114,28 @@ RUN yum -y install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-
 RUN yum -y install postgresql10 postgresql10-server postgresql10-devel postgresql10-contrib citus_10-7.3.0 cstore_fdw_10-1.6.0 postgis24_10-2.4.4 pgrouting_10-2.6.0 timescaledb_10-0.9.1 git nano gcc make; yum clean all
 
 RUN yum -y install https://heterodb.github.io/swdc/yum/rhel7-x86_64/heterodb-swdc-1.0-1.el7.noarch.rpm
-RUN yum -y install pg_strom-PG10-2.0 nvme_strom-1.0
-
-ADD ./postgresql-setup /usr/bin/postgresql-setup
-ADD ./supervisord.conf /etc/supervisord.conf
-ADD ./start_postgres.sh /start_postgres.sh
+RUN yum -y install pg_strom-PG10-2.0 nvme_strom-1.0 && \
+    rm -rf /var/cache/yum/*
 
 #Sudo requires a tty. fix that.
 RUN sed -i 's/.*requiretty$/#Defaults requiretty/' /etc/sudoers
+ADD ./supervisord.conf /etc/supervisord.conf
+	
+ADD ./postgresql-10-setup /usr/bin/postgresql-10-setup
+ADD ./start_postgres.sh /start_postgres.sh
 
-RUN chmod +x /usr/bin/postgresql-setup
+RUN chmod +x /usr/bin/postgresql-10-setup
 RUN chmod +x /start_postgres.sh
-
-ADD ./postgresql.conf /var/lib/pgsql/data/postgresql.conf
-
-RUN chown -v postgres.postgres /var/lib/pgsql/data/postgresql.conf
 
 RUN /usr/bin/postgresql-setup initdb
 
-RUN echo "host    all             all             0.0.0.0/0               md5" >> /var/lib/pgsql/data/pg_hba.conf
+ADD ./postgresql.conf /var/lib/pgsql/10/data/postgresql.conf
 
-VOLUME ["/var/lib/pgsql"]
+RUN chown -v postgres.postgres /var/lib/pgsql/10/data/postgresql.conf
+
+RUN echo "host    all             all             0.0.0.0/0               md5" >> /var/lib/pgsql/10/data/pg_hba.conf
+
+#VOLUME ["/var/lib/pgsql"]
 
 EXPOSE 5432
 

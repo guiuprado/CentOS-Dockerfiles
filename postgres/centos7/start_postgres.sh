@@ -3,7 +3,7 @@
 DB_NAME=${POSTGRES_DB:-}
 DB_USER=${POSTGRES_USER:-}
 DB_PASS=${POSTGRES_PASSWORD:-}
-PG_CONFDIR="/var/lib/pgsql/data"
+PG_CONFDIR="/var/lib/pgsql/10/data/"
 
 __create_user() {
   #Grant rights
