@@ -7,6 +7,9 @@
 FROM centos:centos7
 LABEL MAINTAINER "The CentOS Project <cloud-ops@centos.org> | NVIDIA CORPORATION <cudatools@nvidia.com> | jamshid" 
 
+########################################################################################################################################################
+#	NVIDA | CUDA
+########################################################################################################################################################
 
 # This shows systemd services (nginx and named) running in a centos7 container.
 # There have been lots of problems and workarounds for this, see:
@@ -15,39 +18,7 @@ LABEL MAINTAINER "The CentOS Project <cloud-ops@centos.org> | NVIDIA CORPORATION
 
 RUN yum install -y epel-release # for nginx
 RUN yum install -y initscripts  # for old "service"
-
-ENV container=docker
-
-RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
-rm -f /lib/systemd/system/multi-user.target.wants/*;\
-rm -f /etc/systemd/system/*.wants/*;\
-rm -f /lib/systemd/system/local-fs.target.wants/*; \
-rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
-rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
-rm -f /lib/systemd/system/basic.target.wants/*;\
-rm -f /lib/systemd/system/anaconda.target.wants/*;
-
-
-# named (dns server) service
-RUN yum install -y bind bind-utils
-RUN systemctl enable named.service 
-
-# Unrelated to systemd, but Apacehe httpd install fails at least if docker uses
-# (default) aufs.
-#   Error unpacking rpm package httpd-2.4.6-40.el7.centos.x86_64
-#   error: unpacking of archive failed on file /usr/sbin/suexec: cpio: cap_set_file
-#RUN yum install -y httpd
-
-# webserver service
-#RUN yum install -y nginx
-#RUN systemctl enable nginx.service
-
-# Without this, init won't start the enabled services and exec'ing and starting
-# them reports "Failed to get D-Bus connection: Operation not permitted".
-VOLUME /run /tmp
-
-# Don't know if it's possible to run services without starting this
-# CMD /usr/sbin/init
+RUN yum install "kernel-devel-uname-r == $(uname -r)"
 
 RUN NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efacce4ab5 && \
     curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/7fa2af80.pub | sed '/^Version/d' > /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA && \
@@ -84,7 +55,57 @@ ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 ENV NVIDIA_REQUIRE_CUDA "cuda>=9.1"
 
-RUN nvidia-smi
+######################################################################################################################################################## 
+
+
+
+
+########################################################################################################################################################
+#	SYSTEMD
+########################################################################################################################################################
+
+ENV container=docker
+
+RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+rm -f /lib/systemd/system/multi-user.target.wants/*;\
+rm -f /etc/systemd/system/*.wants/*;\
+rm -f /lib/systemd/system/local-fs.target.wants/*; \
+rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+rm -f /lib/systemd/system/basic.target.wants/*;\
+rm -f /lib/systemd/system/anaconda.target.wants/*;
+
+
+# named (dns server) service
+RUN yum install -y bind bind-utils
+RUN systemctl enable named.service 
+
+# Unrelated to systemd, but Apacehe httpd install fails at least if docker uses
+# (default) aufs.
+#   Error unpacking rpm package httpd-2.4.6-40.el7.centos.x86_64
+#   error: unpacking of archive failed on file /usr/sbin/suexec: cpio: cap_set_file
+#RUN yum install -y httpd
+
+# webserver service
+#RUN yum install -y nginx
+#RUN systemctl enable nginx.service
+
+# Without this, init won't start the enabled services and exec'ing and starting
+# them reports "Failed to get D-Bus connection: Operation not permitted".
+VOLUME /run /tmp
+
+# Don't know if it's possible to run services without starting this
+# CMD /usr/sbin/init
+
+########################################################################################################################################################
+
+
+
+
+
+########################################################################################################################################################
+#	POSTGRES AND EXTENSIONS
+########################################################################################################################################################
 
 RUN yum -y update; yum clean all
 
@@ -118,3 +139,7 @@ VOLUME ["/var/lib/pgsql"]
 EXPOSE 5432
 
 CMD ["/bin/bash", "/start_postgres.sh"]
+
+
+########################################################################################################################################################
+
